@@ -302,18 +302,20 @@ input[type="color"] {
 
 .popup-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
+  top: 5px;
+  right: 5px;
+  background: #AAA;
   border: none;
-  font-size: 1.5rem;
+  font-size: 0.7rem;
+  width: 2px;
+  height: 2px;
   cursor: pointer;
-  color: #666;
+  color: white;
   transition: color 0.2s ease;
 }
 
 .popup-close:hover {
-  color: black;
+  color: #444;
 }
 
 /* Pop-up Buttons */
@@ -324,7 +326,7 @@ input[type="color"] {
   background: #ddd;
   border: none;
   border-radius: 5px;
-  margin-top: 10px;
+  margin-top: 5px;
   transition: background 0.3s ease-in-out;
 }
 
@@ -333,14 +335,14 @@ input[type="color"] {
 }
 /* Style général des boutons */
 button {
-  padding: 15px 30px;
+  padding: 10px 25px;
   font-size: 1rem;
   font-weight: bold;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  margin: 10px;
+  margin: 5px;
   text-align: center;
   display: inline-flex;
   align-items: center;

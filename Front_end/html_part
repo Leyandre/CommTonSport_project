@@ -44,15 +44,9 @@
     <button class="btn-next match-btn" data-match-count="1">1 Match</button>
     <button class="btn-next match-btn" data-match-count="2">2 Matchs</button>
     <button class="btn-next match-btn" data-match-count="3">3 Matchs</button>
-    <button class="btn-premium match-btn" data-match-count="4" disabled>
-      <span>4 Matchs</span> <span class="premium-icon">👑</span>
-    </button>
-    <button class="btn-premium match-btn" data-match-count="5" disabled>
-      <span>5 Matchs</span> <span class="premium-icon">👑</span>
-    </button>
-    <button class="btn-premium match-btn" data-match-count="6" disabled>
-      <span>6 Matchs</span> <span class="premium-icon">👑</span>
-    </button>
+    <button class="btn-premium match-btn" data-match-count="4">4 Matchs</button>
+    <button class="btn-premium match-btn" data-match-count="5">5 Matchs</button>
+    <button class="btn-premium match-btn" data-match-count="6">6 Matchs</button>
     <button class="btn-prev">Précédent</button>
   </div>
 
@@ -93,7 +87,7 @@
   <!-- Pop-up Premium -->
   <div id="premium-popup" class="popup hidden">
     <div class="popup-content">
-      <button class="popup-close" id="popup-close">×</button>
+      <button class="popup-close" id="popup-close">Clore</button>
       <h2>Passer en mode Premium</h2>
       <p>Débloquez jusqu'à 6 matchs et d'autres fonctionnalités avancées pour seulement :</p>
       <ul>

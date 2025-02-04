@@ -1,0 +1,261 @@
+document.addEventListener("DOMContentLoaded", () => {
+  // Sélection des éléments principaux
+  const homeSection = document.getElementById("home");
+  const homeButton = document.getElementById("home-button")
+  const progressContainer = document.querySelector(".progress-container");
+  const progressBar = document.querySelector(".progress-bar");
+  const steps = Array.from(document.querySelectorAll(".step-container"));
+  const startBtn = document.getElementById("start-btn");
+  const visual = document.getElementById("visual");
+  const matchDetailsContainer = document.getElementById("match-details");
+  const downloadBtn = document.getElementById("download-btn");
+  const premiumPopup = document.getElementById("premium-popup");
+  const closePopupBtn = document.getElementById("popup-close");
+  const subscribeBtn = document.getElementById("subscribe-btn");
+  const stayFreeBtn = document.getElementById("stay-free-btn");
+  //const premiumButtons = document.querySelectorAll(".btn-premium");
+
+  let currentStep = 0;
+  let format = "post"; // Format par défaut
+  let matches = []; // Données des matchs
+  let isPremium = false; // Par défaut : utilisateur non premium
+
+  // Affichage d'une étape spécifique
+  const showStep = (index) => {
+    steps.forEach((step, i) => {
+      step.classList.toggle("active", i === index);
+    });
+    updateProgressBar(index);
+  };
+
+  // Mise à jour de la barre de progression
+  const resetProgressBar = () => {
+    progressBar.style.width = `${0}%`;
+  };
+
+  // Mise à jour de la barre de progression
+  const updateProgressBar = (index) => {
+    const progress = ((index + 1) / steps.length) * 100;
+    progressBar.style.width = `${progress}%`;
+  };
+
+  // Démarrer le processus
+  const startProcess = () => {
+    homeSection.classList.add("hidden");
+    progressContainer.classList.add("active");
+    setTimeout(() => showStep(0), 500);
+  };
+
+  // Renvoie à la page d'accueil
+  const returnHome = () => {
+    if (homeSection.classList.contains("hidden")) { // Vérifie qu'on ne se trouve pas sur la page d'accueil
+      currentStep = 0;
+      steps.forEach((step) => step.classList.remove("active")); // Désactive toutes les étapes
+      progressContainer.classList.remove("active") // Retire la barre de progression
+      resetProgressBar();
+      homeSection.classList.remove("hidden"); // Affiche la page d'accueil
+    }
+  }
+
+  // Mettre à jour le format (Post ou Story)
+  const updateFormat = (selectedFormat) => {
+    format = selectedFormat;
+
+    // Dimensions dynamiques selon le format choisi
+    if (format === "post") {
+      visual.style.width = "300px";
+      visual.style.height = "300px";
+    } else if (format === "story") {
+      visual.style.width = "300px";
+      visual.style.height = "533px";
+    }
+
+    updatePreview();
+  };
+
+  // Génération dynamique des champs de match
+  const generateMatchFields = (matchCount) => {
+    matches = Array.from({ length: matchCount }, () => ({
+      homeTeam: "",
+      awayTeam: "",
+      homeScore: "",
+      awayScore: "",
+    }));
+
+    matchDetailsContainer.innerHTML = ""; // Réinitialisation des champs
+    matches.forEach((_, index) => {
+      const matchDiv = document.createElement("div");
+      matchDiv.innerHTML = `
+        <h3>Match ${index + 1}</h3>
+        <input type="text" placeholder="Équipe domicile" data-index="${index}" data-field="homeTeam">
+        <input type="number" placeholder="Score domicile" data-index="${index}" data-field="homeScore">
+        <input type="text" placeholder="Équipe extérieur" data-index="${index}" data-field="awayTeam">
+        <input type="number" placeholder="Score extérieur" data-index="${index}" data-field="awayScore">
+      `;
+      matchDetailsContainer.appendChild(matchDiv);
+    });
+
+    // Écouteurs pour chaque champ de match
+    matchDetailsContainer.querySelectorAll("input").forEach((input) =>
+      input.addEventListener("input", (e) => {
+        const index = e.target.dataset.index;
+        const field = e.target.dataset.field;
+        matches[index][field] = e.target.value;
+        updatePreview();
+      })
+    );
+  };
+
+  // Mise à jour des couleurs
+  const updateColors = () => {
+    const primaryColor = document.getElementById("primary-color").value;
+    const secondaryColor = document.getElementById("secondary-color").value;
+    visual.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+  };
+
+  // Ajouter un logo uploadé
+  const addLogo = () => {
+    const logoInput = document.getElementById("logo-upload");
+    if (logoInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const logoImg = document.createElement("img");
+        logoImg.src = event.target.result;
+        logoImg.style.position = "absolute";
+        logoImg.style.top = "10px";
+        logoImg.style.right = "10px";
+        logoImg.style.width = "50px";
+        logoImg.style.height = "50px";
+        logoImg.style.borderRadius = "50%";
+        logoImg.style.boxShadow = "0px 4px 6px rgba(0, 0, 0, 0.3)";
+        visual.appendChild(logoImg);
+      };
+      reader.readAsDataURL(logoInput.files[0]);
+    }
+  };
+
+  // Mise à jour de la prévisualisation
+  const updatePreview = () => {
+    visual.innerHTML = ""; // Nettoyage du visuel
+
+    // Ajouter les couleurs
+    updateColors();
+
+    // Ajouter le logo
+    addLogo();
+
+    // Ajouter les matchs
+    matches.forEach((match) => {
+      const matchElement = document.createElement("div");
+      matchElement.className = "match";
+      matchElement.innerHTML = `
+        <div>${match.homeTeam || "Équipe A"} (${match.homeScore || 0})</div>
+        <div>vs</div>
+        <div>${match.awayTeam || "Équipe B"} (${match.awayScore || 0})</div>
+      `;
+      visual.appendChild(matchElement);
+    });
+  };
+
+  // Téléchargement de la prévisualisation
+  const downloadVisual = () => {
+    html2canvas(visual, {
+      backgroundColor: null,
+      scale: 2,
+    }).then((canvas) => {
+      const link = document.createElement("a");
+      link.download = "visual.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+  };
+
+  // Gestion des boutons premiums
+  document.querySelectorAll(".btn-premium").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      if (!isPremium) {
+        premiumPopup.classList.remove("hidden")
+        premiumPopup.classList.add("active");
+      }
+      else {
+        const matchCount = btn.dataset.matchCount;
+
+        if (matchCount) generateMatchFields(Number(matchCount));
+      }
+    })
+  );
+
+  // Mute les boutons premiums match en bouton classique
+  const free_match_premium_button = () => {
+    document.querySelectorAll(".btn-premium").forEach((btn) => { 
+      if (btn.classList.contains("match-btn")) {
+
+        btn.classList.replace("btn-premium", "btn-next")
+      }
+    });
+  };
+
+  // Fermer le pop-up premium
+  closePopupBtn.addEventListener("click", () => {
+    premiumPopup.classList.remove("active");
+  });
+
+  // Activer le mode premium
+  subscribeBtn.addEventListener("click", () => {
+    isPremium = true;
+    premiumPopup.classList.remove("active");
+    free_match_premium_button()
+    alert("Vous êtes maintenant en mode premium !");
+  });
+
+  // Rester en mode free
+  stayFreeBtn.addEventListener("click", () => {
+    premiumPopup.classList.remove("active");
+  });
+
+  // Navigation entre étapes
+  document.querySelectorAll(".btn-next").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const matchCount = btn.dataset.matchCount;
+      const selectedFormat = btn.dataset.format;
+
+      if (matchCount) generateMatchFields(Number(matchCount));
+      if (selectedFormat) updateFormat(selectedFormat);
+
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    })
+  );
+
+  document.querySelectorAll(".btn-prev").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+      }
+      else {
+        currentStep--;
+        returnHome()
+      }
+    })
+  );
+
+  // Gestion des couleurs et du logo
+  document.getElementById("primary-color").addEventListener("input", updatePreview);
+  document.getElementById("secondary-color").addEventListener("input", updatePreview);
+  document.getElementById("logo-upload").addEventListener("change", updatePreview);
+
+  // Téléchargement du visuel
+  downloadBtn.addEventListener("click", downloadVisual);
+
+  // Démarrage
+  startBtn.addEventListener("click", startProcess);
+
+  // Retour à la page d'accueil
+  homeButton.addEventListener("click", returnHome)
+
+  // Initialisation
+  showStep(-1); // Cacher toutes les étapes au départ
+});
