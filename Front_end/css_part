@@ -1,0 +1,431 @@
+/* Global Styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom right, #1a365d, #2f855a);
+  color: white;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, p {
+  margin: 0;
+  line-height: 1.5;
+  text-align: center;
+}
+
+button {
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Header */
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: rotate(360deg);
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+ 
+  margin-left: 10px;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.home-btn {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.home-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Page d'accueil */
+#home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100vh;
+  animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.container {
+  max-width: 600px;
+  padding: 20px;
+}
+
+.btn-primary {
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  background: #2f855a;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background: #1a365d;
+  transform: translateY(-3px);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* Barre de progression */
+.progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.progress-container.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2f855a, #1a365d);
+  width: 0;
+  transition: width 0.4s ease;
+}
+
+/* Étapes */
+.step-container {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  padding: 20px;
+  animation: fadeIn 1s ease;
+}
+
+.step-container.active {
+  display: flex;
+}
+
+/* Match Buttons */
+.match-btn {
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin: 10px;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.match-btn:hover:not([disabled]) {
+  background: #2f855a;
+  transform: translateY(-3px);
+}
+
+.match-btn:active:not([disabled]) {
+  transform: translateY(1px);
+}
+
+.match-btn[disabled] {
+  background: #666;
+  cursor: not-allowed;
+}
+
+.btn-premium {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.premium-icon {
+  font-size: 1.2rem;
+  color: gold;
+}
+
+/* Inputs and Labels */
+label {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  display: block;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+input[type="color"] {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 300px;
+  margin: 10px 0;
+  background: #fff;
+  color: #333;
+}
+
+/* Visual Preview */
+.visual {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, #1a365d, #2f855a);
+  border-radius: 10px;
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Pop-up */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.popup.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.popup.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.popup-content {
+  background: white;
+  color: #333;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  animation: popIn 0.4s ease-in-out;
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.popup-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.popup-close:hover {
+  color: black;
+}
+
+/* Pop-up Buttons */
+.btn-secondary {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  color: #333;
+  background: #ddd;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  transition: background 0.3s ease-in-out;
+}
+
+.btn-secondary:hover {
+  background: #bbb;
+}
+/* Style général des boutons */
+button {
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin: 10px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Couleurs des boutons standards */
+button.btn-primary {
+  background: linear-gradient(to right, #2f855a, #1a365d);
+  color: #fff;
+}
+
+button.btn-primary:hover {
+  background: linear-gradient(to right, #1a365d, #2f855a);
+  transform: translateY(-2px);
+}
+
+button.btn-secondary {
+  background: #ddd;
+  color: #333;
+}
+
+button.btn-secondary:hover {
+  background: #ccc;
+  transform: translateY(-2px);
+}
+
+/* Boutons premium */
+button.btn-premium {
+  background: linear-gradient(to right, #ff9a9e, #fad0c4);
+  color: #fff;
+  position: relative;
+  cursor: pointer;
+}
+
+button.btn-premium::after {
+  content: "👑";
+  font-size: 1.2rem;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #fff;
+  color: #ff9a9e;
+  border-radius: 50%;
+  padding: 2px 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button.btn-premium:hover {
+  background: linear-gradient(to right, #fad0c4, #ff9a9e);
+  transform: translateY(-2px);
+}
+
+/* Désactivation des boutons premium (style) */
+button.btn-premium[disabled] {
+  background: linear-gradient(to right, #ccc, #999);
+  color: #666;
+  pointer-events: none; /* Éviter les clics uniquement si non Premium */
+}
+
+/* Boutons dans le pop-up */
+.popup .btn-primary {
+  background: linear-gradient(to right, #6c63ff, #4c4cff);
+  color: white;
+}
+
+.popup .btn-secondary {
+  background: transparent;
+  border: 2px solid #6c63ff;
+  color: #6c63ff;
+}
+
+.popup .btn-secondary:hover {
+  background: #6c63ff;
+  color: white;
+}
+
+/* Animation des boutons */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

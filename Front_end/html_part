@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comm' Ton Sport</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header id="header">
+    <div class="header-container">
+      <img src="logo.png" alt="Logo de Comm' Ton Sport" id="header-logo" class="logo">
+      <h1 class="header-title">Comm' Ton Sport</h1>
+      <button id="home-button" class="home-btn">🏠</button>
+    </div>
+  </header>
+
+  <!-- Page d'accueil -->
+  <section id="home" class="active">
+    <div class="container">
+      <h1>Bienvenue sur Comm' Ton Sport</h1>
+      <p>Créez des visuels sportifs professionnels pour vos équipes en quelques clics !</p>
+      <button id="start-btn" class="btn-primary">Commencer</button>
+    </div>
+  </section>
+
+  <!-- Barre de progression -->
+  <div class="progress-container">
+    <div class="progress-bar"></div>
+  </div>
+
+  <!-- Étape 1 : Choix du format -->
+  <div class="step-container">
+    <h1>Choisissez votre format</h1>
+    <button class="btn-next format-btn" data-format="post">Post (1:1)</button>
+    <button class="btn-next format-btn" data-format="story">Story (9:16)</button>
+    <button class="btn-prev">Précédent</button>
+  </div>
+
+  <!-- Étape 2 : Nombre de matchs -->
+  <div class="step-container">
+    <h1>Combien de matchs voulez-vous afficher ?</h1>
+    <button class="btn-next match-btn" data-match-count="1">1 Match</button>
+    <button class="btn-next match-btn" data-match-count="2">2 Matchs</button>
+    <button class="btn-next match-btn" data-match-count="3">3 Matchs</button>
+    <button class="btn-premium match-btn" data-match-count="4" disabled>
+      <span>4 Matchs</span> <span class="premium-icon">👑</span>
+    </button>
+    <button class="btn-premium match-btn" data-match-count="5" disabled>
+      <span>5 Matchs</span> <span class="premium-icon">👑</span>
+    </button>
+    <button class="btn-premium match-btn" data-match-count="6" disabled>
+      <span>6 Matchs</span> <span class="premium-icon">👑</span>
+    </button>
+    <button class="btn-prev">Précédent</button>
+  </div>
+
+  <!-- Étape 3 : Informations des équipes -->
+  <div class="step-container">
+    <h1>Renseignez les équipes</h1>
+    <div id="match-details">
+      <!-- Champs des équipes générés dynamiquement ici -->
+    </div>
+    <button class="btn-next">Suivant</button>
+    <button class="btn-prev">Précédent</button>
+  </div>
+
+  <!-- Étape 4 : Personnalisation -->
+  <div class="step-container">
+    <h1>Personnalisation</h1>
+    <label for="logo-upload">Logo :</label>
+    <input type="file" id="logo-upload" accept="image/*">
+    <label>Couleur principale :</label>
+    <input type="color" id="primary-color" value="#1a365d">
+    <label>Couleur secondaire :</label>
+    <input type="color" id="secondary-color" value="#2f855a">
+    <button class="btn-next">Suivant</button>
+    <button class="btn-prev">Précédent</button>
+  </div>
+
+  <!-- Étape 5 : Prévisualisation -->
+  <div class="step-container">
+    <h1>Prévisualisation</h1>
+    <div id="visual" class="visual">
+      <!-- L'aperçu du visuel généré s'affichera ici -->
+      <p>Prévisualisation en cours...</p>
+    </div>
+    <button id="download-btn" class="btn-primary">Télécharger</button>
+    <button class="btn-prev">Précédent</button>
+  </div>
+
+  <!-- Pop-up Premium -->
+  <div id="premium-popup" class="popup hidden">
+    <div class="popup-content">
+      <button class="popup-close" id="popup-close">×</button>
+      <h2>Passer en mode Premium</h2>
+      <p>Débloquez jusqu'à 6 matchs et d'autres fonctionnalités avancées pour seulement :</p>
+      <ul>
+        <li><strong>24,99€/mois</strong></li>
+        <li><strong>250€/an</strong></li>
+      </ul>
+      <button id="subscribe-btn" class="btn-primary">S'abonner</button>
+      <button id="stay-free-btn" class="btn-secondary">Rester en mode Free</button>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script src="script.js"></script>
+</body>
+</html>
