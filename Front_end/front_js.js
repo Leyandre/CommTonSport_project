@@ -1,3 +1,82 @@
+const AIRTABLE_API_KEY = "patvRrcGqVW8jViPr.d58ee78caa4df29c5df5b182b20679bf0c071b44af95b85509dc0aaaefa466c2";
+const BASE_ID = "appPvSF0KrHHv7wfz";
+const TABLE_NAME = "Client_Tab";
+const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`
+
+async function getColumnNames() {
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      "Authorization":  `Bearer ${AIRTABLE_API_KEY}`,
+      "content-type": 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    console.log("Erreur lors de la récupération: ", response.statusText);
+    return;
+  }
+  const data = await response.json();
+  
+  for (const record of data.records) {
+    const nom = record.fields.Nom;
+
+    if (nom === "Dupont") {
+      const recordID = record.id;
+      const updateData = {
+        fields: {
+          Nom: "De Laportière",
+          Email: "Leyandre@live.fr"
+        }
+      };
+
+      await updateRecord(recordID, updateData);
+    }
+
+  }
+}
+
+// Fonction pour mettre à jour un record spécifique
+async function updateRecord(recordId, updateData) {
+  const updateUrl = `${url}/${recordId}`;
+
+  const response = await fetch(updateUrl, {
+    method: 'PATCH',
+    headers: {
+      "Authorization": `Bearer ${AIRTABLE_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(updateData)
+  });
+
+  if (!response.ok) {
+    console.error(`Erreur lors de la mise à jour du record ${recordId}:`, response.statusText);
+  } else {
+    console.log(`Record ${recordId} mis à jour avec succès.`);
+  }
+}
+
+// Fonction pour créer un record spécifique
+async function createRecord(data) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      "Authorization": `Bearer ${AIRTABLE_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      fields: data,
+    }),
+  });
+
+  if (!response.ok) {
+    console.error(`Erreur lors de la création du record:`, response.statusText);
+  } else {
+    const jsonResponse = await response.json();
+    console.log(`Record créé avec succès.`, jsonResponse);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Sélection des éléments principaux
   const homeSection = document.getElementById("home");
@@ -13,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closePopupBtn = document.getElementById("popup-close");
   const subscribeBtn = document.getElementById("subscribe-btn");
   const stayFreeBtn = document.getElementById("stay-free-btn");
+  const signinDetailsContainer = document.getElementById("client-signin-details");
   //const premiumButtons = document.querySelectorAll(".btn-premium");
 
   let currentStep = 0;
@@ -193,6 +273,32 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.classList.replace("btn-premium", "btn-next")
       }
     });
+  };
+
+  // Génération dynamique des champs d'inscription client
+  const generateClientFields = () => {
+    let client_data = {
+      Nom : "",
+      Prenom : "",
+      Email : ""
+    };
+
+    signinDetailsContainer.innerHTML = ""; // Réinitialisation des champs
+    Object.entries(client_data).forEach(([key, value], index) => {
+      const signinDiv = document.createElement("div");
+
+      // Manipulation de la clé pour rendre l'interface plus lisible
+      const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
+
+
+      signinDiv.innerHTML = `
+        <h3>${formattedKey}</h3>
+        <input type="text" placeholder="Entrez votre ${formattedKey}" data-field="${key}">
+      `;
+      signinDetailsContainer.appendChild(signinDiv);
+    });
+
+    createRecord(client_data)
   };
 
   // Fermer le pop-up premium
