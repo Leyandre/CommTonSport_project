@@ -3,6 +3,34 @@ const BASE_ID = "appPvSF0KrHHv7wfz";
 const TABLE_NAME = "Client_Tab";
 const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`
 
+async function isEmailInData(email_to_check) {
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      "Authorization":  `Bearer ${AIRTABLE_API_KEY}`,
+      "content-type": 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    console.log("Erreur lors de la récupération: ", response.statusText);
+    return;
+  }
+  const data = await response.json();
+  const isemail = false
+
+  for (const record of data.records) {
+    const emaildata = record.field.Email;
+
+    if (emaildata === email_to_check) {
+      isemail = true;
+      break;
+    }
+  }
+
+  return isemail
+}
+
 async function getColumnNames() {
   const response = await fetch(url, {
     method: 'GET',
@@ -89,16 +117,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const matchDetailsContainer = document.getElementById("match-details");
   const downloadBtn = document.getElementById("download-btn");
   const premiumPopup = document.getElementById("premium-popup");
+  const signupPopup = document.getElementById("signup-popup");
   const closePopupBtn = document.getElementById("popup-close");
   const subscribeBtn = document.getElementById("subscribe-btn");
   const stayFreeBtn = document.getElementById("stay-free-btn");
-  const signinDetailsContainer = document.getElementById("client-signin-details");
+  const signupDetailsContainer = document.getElementById("client-signup-details");
+  const signupNextBtn = document.getElementById("signupNext-btn");
+  const signupPrevBtn = document.getElementById("signupPrev-btn");
   //const premiumButtons = document.querySelectorAll(".btn-premium");
 
   let currentStep = 0;
   let format = "post"; // Format par défaut
   let matches = []; // Données des matchs
   let isPremium = false; // Par défaut : utilisateur non premium
+  let client_data = {
+    Nom : "",
+    Prenom : "",
+    Email : ""
+  };
+
+  // Vérification du format d'une adresse mail
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Vérification de l'existence d'un domaine d'adresse mail
+  const checkEmailDomain = async (email) => {
+    const domain = email.split('@')[1];
+    const response = await fetch(`https://dns.google/resolve?name=${domain}&type=MX`);
+    const data = await response.json();
+
+    if (data.Answer && data.Answer.length > 0) {
+      return true
+    }else {
+      return false
+    }
+  };
 
   // Affichage d'une étape spécifique
   const showStep = (index) => {
@@ -277,28 +332,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Génération dynamique des champs d'inscription client
   const generateClientFields = () => {
-    let client_data = {
-      Nom : "",
-      Prenom : "",
-      Email : ""
-    };
 
-    signinDetailsContainer.innerHTML = ""; // Réinitialisation des champs
+    signupDetailsContainer.innerHTML = ""; // Réinitialisation des champs
     Object.entries(client_data).forEach(([key, value], index) => {
-      const signinDiv = document.createElement("div");
+      const signupDiv = document.createElement("div");
 
       // Manipulation de la clé pour rendre l'interface plus lisible
       const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
 
 
-      signinDiv.innerHTML = `
+      signupDiv.innerHTML = `
         <h3>${formattedKey}</h3>
         <input type="text" placeholder="Entrez votre ${formattedKey}" data-field="${key}">
       `;
-      signinDetailsContainer.appendChild(signinDiv);
+      signupDetailsContainer.appendChild(signupDiv);
     });
-
-    createRecord(client_data)
   };
 
   // Fermer le pop-up premium
@@ -310,6 +358,9 @@ document.addEventListener("DOMContentLoaded", () => {
   subscribeBtn.addEventListener("click", () => {
     isPremium = true;
     premiumPopup.classList.remove("active");
+    signupPopup.classList.remove("hidden");
+    signupPopup.classList.add("active")
+    generateClientFields();
     free_match_premium_button()
     alert("Vous êtes maintenant en mode premium !");
   });
@@ -317,6 +368,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // Rester en mode free
   stayFreeBtn.addEventListener("click", () => {
     premiumPopup.classList.remove("active");
+  });
+
+  // Enregistrer un nouveau compte
+  signupNextBtn.addEventListener("click", () => {
+    if (isValidEmail(client_data.Email)) {
+      if (checkEmailDomain(client_data.Email)){
+        if (!isEmailInData(client_data.Email)) {
+          if (length(client_data.Nom) > 0 && length(client_data.Prenom)) {
+            createRecord(client_data);
+          }else {
+            console.log("Nom ou Prénom non spécifié");
+          }
+        }else {
+          console.log("Adresse mail déjà présente dans la base de donnée");
+        }
+      }else {
+        console.log("Le domaine de l'adresse mail n'existe pas");
+      }
+    }
   });
 
   // Navigation entre étapes
