@@ -3,7 +3,28 @@ const BASE_ID = "appPvSF0KrHHv7wfz";
 const TABLE_NAME = "Client_Tab";
 const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`
 
-async function isEmailInData(email_to_check) {
+
+  // Vérification du format d'une adresse mail
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+  // Vérification de l'existence d'un domaine d'adresse mail
+const checkEmailDomain = async (email) => {
+  const domain = email.split('@')[1];
+  const response = await fetch(`https://dns.google/resolve?name=${domain}&type=MX`);
+  const data = await response.json();
+
+  if (data.Answer && data.Answer.length > 0) {
+     return true
+  }else {
+    return false
+  }
+};
+
+// Vérifie si l'adresse mail n'est pas déjà présente dans la base de donnée
+const isEmailInData = async (email_to_check) => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -17,17 +38,17 @@ async function isEmailInData(email_to_check) {
     return;
   }
   const data = await response.json();
-  const isemail = false
+  let isemail = false
 
   for (const record of data.records) {
-    const emaildata = record.field.Email;
+    const emaildata = record.fields.Email;
 
     if (emaildata === email_to_check) {
+      console.log("data de l'email déjà présent", emaildata)
       isemail = true;
       break;
     }
   }
-
   return isemail
 }
 
@@ -105,6 +126,50 @@ async function createRecord(data) {
   }
 }
 
+  // Gère l'enregistrement d'un nouveau compte avec toutes les étapes nécessaires
+async function handleSignup(client_data, event) {
+  console.log("hey");
+
+  event.preventDefault();
+  try {
+    
+    if (isValidEmail(client_data.Email)) {
+      if (await checkEmailDomain(client_data.Email)){
+        if (!(await isEmailInData(client_data.Email))) {
+          if ((client_data.Nom.length > 0) && (client_data.Prenom.length > 0)) {
+            await createRecord(client_data);
+          }else {
+            console.log("Nom ou Prénom non spécifié");
+          }
+        }else {
+          console.log("Adresse mail déjà présente dans la base de donnée");
+        }
+      }else {
+        console.log("Le domaine de l'adresse mail n'existe pas");
+      }
+    }
+  }catch (error) {
+    console.error("Erreur dans handleSignup : ", error);
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
   // Sélection des éléments principaux
   const homeSection = document.getElementById("home");
@@ -134,25 +199,6 @@ document.addEventListener("DOMContentLoaded", () => {
     Nom : "",
     Prenom : "",
     Email : ""
-  };
-
-  // Vérification du format d'une adresse mail
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Vérification de l'existence d'un domaine d'adresse mail
-  const checkEmailDomain = async (email) => {
-    const domain = email.split('@')[1];
-    const response = await fetch(`https://dns.google/resolve?name=${domain}&type=MX`);
-    const data = await response.json();
-
-    if (data.Answer && data.Answer.length > 0) {
-      return true
-    }else {
-      return false
-    }
   };
 
   // Affichage d'une étape spécifique
@@ -332,22 +378,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Génération dynamique des champs d'inscription client
   const generateClientFields = () => {
-
     signupDetailsContainer.innerHTML = ""; // Réinitialisation des champs
-    Object.entries(client_data).forEach(([key, value], index) => {
-      const signupDiv = document.createElement("div");
 
-      // Manipulation de la clé pour rendre l'interface plus lisible
-      const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
+    Object.entries(client_data).forEach(([key, value]) => {
+        const signupDiv = document.createElement("div");
 
+        const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
 
-      signupDiv.innerHTML = `
-        <h3>${formattedKey}</h3>
-        <input type="text" placeholder="Entrez votre ${formattedKey}" data-field="${key}">
-      `;
-      signupDetailsContainer.appendChild(signupDiv);
+        // Création de l'input
+        const inputField = document.createElement("input");
+        inputField.type = "text";
+        inputField.placeholder = `Entrez votre ${formattedKey}`;
+        inputField.dataset.field = key;
+        inputField.value = value; // Pré-remplir avec la valeur actuelle de client_data
+
+        // Mettre à jour client_data quand l'utilisateur tape
+        inputField.addEventListener("input", (event) => {
+            client_data[key] = event.target.value;
+            console.log(client_data); // Vérification en console
+        });
+
+        // Ajout des éléments au DOM
+        signupDiv.appendChild(document.createElement("h3")).textContent = formattedKey;
+        signupDiv.appendChild(inputField);
+        signupDetailsContainer.appendChild(signupDiv);
     });
-  };
+};
 
   // Fermer le pop-up premium
   closePopupBtn.addEventListener("click", () => {
@@ -361,8 +417,6 @@ document.addEventListener("DOMContentLoaded", () => {
     signupPopup.classList.remove("hidden");
     signupPopup.classList.add("active")
     generateClientFields();
-    free_match_premium_button()
-    alert("Vous êtes maintenant en mode premium !");
   });
 
   // Rester en mode free
@@ -371,22 +425,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Enregistrer un nouveau compte
-  signupNextBtn.addEventListener("click", () => {
-    if (isValidEmail(client_data.Email)) {
-      if (checkEmailDomain(client_data.Email)){
-        if (!isEmailInData(client_data.Email)) {
-          if (length(client_data.Nom) > 0 && length(client_data.Prenom)) {
-            createRecord(client_data);
-          }else {
-            console.log("Nom ou Prénom non spécifié");
-          }
-        }else {
-          console.log("Adresse mail déjà présente dans la base de donnée");
-        }
-      }else {
-        console.log("Le domaine de l'adresse mail n'existe pas");
-      }
-    }
+  signupNextBtn.addEventListener("click", (event) => {
+    handleSignup(client_data, event);
+    signupPopup.classList.remove("active");
+    free_match_premium_button()
   });
 
   // Navigation entre étapes
