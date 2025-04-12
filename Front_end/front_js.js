@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".btn-premium").forEach((btn) =>
     btn.addEventListener("click", () => {
       if (!isPremium) {
-        premiumPopup.classList.remove("hidden")
+        premiumPopup.classList.remove("hidden");
         premiumPopup.classList.add("active");
       }
       else {
